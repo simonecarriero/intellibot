@@ -22,7 +22,10 @@
     "build": "tsc",
     "localstack:start": "docker restart intellibot-localstack || docker run --rm -d -p 4566:4566 -v /var/run/docker.sock:/var/run/docker.sock --env DOCKER_HOST=unix:///var/run/docker.sock --name intellibot-localstack localstack/localstack",
     "localstack:stop": "docker ps --filter name=intellibot-localstack -aq | xargs docker rm -f",
-    "start": "yarn build && yarn localstack:start && cdklocal bootstrap && cdklocal deploy --require-approval never && awslocal lambda invoke --function-name intellibot-lambda /dev/stdout; yarn localstack:stop",
+    "start": "./start.sh",
     "test": "prettier --check src && jest test"
+  },
+  "dependencies": {
+    "telegraf": "^4.12.2"
   }
 }
