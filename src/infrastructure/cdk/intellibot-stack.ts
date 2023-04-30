@@ -22,13 +22,10 @@ export class IntellibotStack extends cdk.Stack {
 
     const api = new RestApi(this, 'intellibot-api', {
       restApiName: 'Intellibotbot API',
+      deployOptions: { stageName: 'prod' },
     });
 
     api.root.addResource('intellibot').addMethod('POST', new LambdaIntegration(lambda, { proxy: true }));
-
-    const deployment = new Deployment(this, 'deployment', { api: api });
-
-    new Stage(this, 'stage', { deployment, stageName: 'prod' });
 
     new cdk.CfnOutput(this, 'apiHostname', { value: `${api.restApiId}.execute-api.localhost.localstack.cloud` });
     new cdk.CfnOutput(this, 'apiUrl', { value: `${api.url}intellibot` });
