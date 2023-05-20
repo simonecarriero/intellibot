@@ -5,7 +5,7 @@ import { bookingRequestRepository as buildBookingRequestRepository } from '../in
 import { freeSpotsRepository as buildFreeSpotsRepository } from '../infrastructure/in-memory/freeSpotsRepository';
 
 describe(`Application`, () => {
-  it(`should book request and get pending requests`, () => {
+  it(`should book request and get pending requests`, async () => {
     const bookingRequestRepository = buildBookingRequestRepository();
     const requestBooking = buildRequestBooking(bookingRequestRepository.add);
     const getPendingBookingRequests = buildGetPendingBookingRequests(bookingRequestRepository.get);
@@ -15,9 +15,9 @@ describe(`Application`, () => {
       from: `18:00`,
       to: `20:00`,
     };
-    requestBooking(bookingRequest);
+    await requestBooking(bookingRequest);
 
-    const requests = getPendingBookingRequests();
+    const requests = await getPendingBookingRequests();
 
     expect(requests).toEqual([
       {
@@ -28,7 +28,7 @@ describe(`Application`, () => {
     ]);
   });
 
-  it(`should return the free spots for the booking requests`, () => {
+  it(`should return the free spots for the booking requests`, async () => {
     let freeSpots = [
       { date: `2019-12-31`, time: `18:00` },
       { date: `2020-01-01`, time: `17:30` },
@@ -47,7 +47,7 @@ describe(`Application`, () => {
 
     const checkBookingRequests = buildCheckBookingRequests(bookingRequestRepository.get, freeSpotsRepository.get);
 
-    const response = checkBookingRequests();
+    const response = await checkBookingRequests();
 
     expect(response).toEqual([
       { date: `2020-01-01`, time: `18:30` },

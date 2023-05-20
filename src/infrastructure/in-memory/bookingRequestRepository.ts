@@ -2,11 +2,12 @@ import { AddBookingRequest, BookingRequest, GetBookingRequests } from '../../dom
 
 const add: (state: BookingRequest[]) => AddBookingRequest =
   (state) =>
-  (request): void => {
+  (request): Promise<void> => {
     state.push(request);
+    return Promise.resolve();
   };
 
-const get: (state: BookingRequest[]) => GetBookingRequests = (state) => () => state;
+const get: (state: BookingRequest[]) => GetBookingRequests = (state) => () => Promise.resolve(state);
 
 export const bookingRequestRepository = (state: BookingRequest[] = []) => {
   return {

@@ -4,6 +4,6 @@ export type BookingRequest = {
   to: string;
 };
 
-export type AddBookingRequest = (request: BookingRequest) => void;
+export type AddBookingRequest = (request: BookingRequest) => Promise<void>;
 
-export type GetBookingRequests = () => BookingRequest[];
+export type GetBookingRequests = () => Promise<BookingRequest[]>;
