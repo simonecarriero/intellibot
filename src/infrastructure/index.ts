@@ -1,7 +1,7 @@
-import { curriedRequestBooking } from '../../application/requestBooking';
-import { curriedGetPendingBookingRequests } from '../../application/getPendingBookingRequests';
-import { curriedAddBookingRequest, curriedGetBookingRequests } from '../aws/dynamo/BookingRequest';
-import { curriedBot } from './bot';
+import { curriedRequestBooking } from '../application/requestBooking';
+import { curriedGetPendingBookingRequests } from '../application/getPendingBookingRequests';
+import { curriedAddBookingRequest, curriedGetBookingRequests } from './aws/dynamo/BookingRequest';
+import { curriedBot } from './telegraf/bot';
 
 const tableName = process.env.DYNAMODB_TABLE_NAME!;
 

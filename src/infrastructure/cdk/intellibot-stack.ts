@@ -21,7 +21,7 @@ export class IntellibotStack extends cdk.Stack {
 
     const lambda = new NodejsFunction(this, 'intellibot-lambda-handler', {
       runtime: Runtime.NODEJS_18_X,
-      entry: path.join(__dirname, `../telegraf/index.js`),
+      entry: path.join(__dirname, `../index.js`),
       handler: 'handler',
       functionName: 'intellibot-lambda',
       environment: {
