@@ -1,14 +1,16 @@
-import { getPendingBookingRequests as buildGetPendingBookingRequests } from './getPendingBookingRequests';
-import { requestBooking as buildRequestBooking } from './requestBooking';
-import { checkBookingRequests as buildCheckBookingRequests } from './checkBookingRequests';
-import { bookingRequestRepository as buildBookingRequestRepository } from '../infrastructure/in-memory/bookingRequestRepository';
-import { freeSpotsRepository as buildFreeSpotsRepository } from '../infrastructure/in-memory/freeSpotsRepository';
+import { curriedGetPendingBookingRequests } from './getPendingBookingRequests';
+import { curriedRequestBooking } from './requestBooking';
+import { curriedCheckBookingRequests as buildCheckBookingRequests } from './checkBookingRequests';
+import { curriedAddBookingRequest, curriedGetBookingRequests } from '../infrastructure/in-memory/BookingRequest';
+import { curriedGetFreeSpots } from '../infrastructure/in-memory/FreeSpot';
+import { BookingRequest } from '../domain/BookingRequest';
+import { FreeSpot } from '../domain/FreeSpot';
 
 describe(`Application`, () => {
   it(`should book request and get pending requests`, async () => {
-    const bookingRequestRepository = buildBookingRequestRepository();
-    const requestBooking = buildRequestBooking(bookingRequestRepository.add);
-    const getPendingBookingRequests = buildGetPendingBookingRequests(bookingRequestRepository.get);
+    const ports = testPorts();
+    const requestBooking = curriedRequestBooking(ports);
+    const getPendingBookingRequests = curriedGetPendingBookingRequests(ports);
 
     const bookingRequest = {
       date: `2023-03-24`,
@@ -41,11 +43,8 @@ describe(`Application`, () => {
       { date: `2020-01-01`, from: `20:00`, to: `21:00` },
     ];
 
-    const bookingRequestRepository = buildBookingRequestRepository(bookingRequests);
-
-    const freeSpotsRepository = buildFreeSpotsRepository(freeSpots);
-
-    const checkBookingRequests = buildCheckBookingRequests(bookingRequestRepository.get, freeSpotsRepository.get);
+    const ports = testPorts(bookingRequests, freeSpots);
+    const checkBookingRequests = buildCheckBookingRequests(ports);
 
     const response = await checkBookingRequests();
 
@@ -55,3 +54,11 @@ describe(`Application`, () => {
     ]);
   });
 });
+
+const testPorts = (bookingRequests: BookingRequest[] = [], freeSpots: FreeSpot[] = []) => {
+  return {
+    addBookingRequest: curriedAddBookingRequest(bookingRequests),
+    getBookingRequests: curriedGetBookingRequests(bookingRequests),
+    getFreeSpots: curriedGetFreeSpots(freeSpots),
+  };
+};

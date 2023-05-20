@@ -1,8 +1,8 @@
-import { GetBookingRequests } from '../domain/BookingRequest';
-import { FreeSpot, GetFreeSpots } from '../domain/FreeSpot';
+import { FreeSpot } from '../domain/FreeSpot';
+import { Ports } from '../domain/Ports';
 
-export const checkBookingRequests =
-  (getBookingRequests: GetBookingRequests, getFreeSpots: GetFreeSpots) => async (): Promise<FreeSpot[]> => {
-    const requests = await getBookingRequests();
-    return requests.flatMap((r) => getFreeSpots(r.date, r.from, r.to));
+export const curriedCheckBookingRequests =
+  (ports: Pick<Ports, 'getBookingRequests' | 'getFreeSpots'>) => async (): Promise<FreeSpot[]> => {
+    const requests = await ports.getBookingRequests();
+    return requests.flatMap((r) => ports.getFreeSpots(r.date, r.from, r.to));
   };

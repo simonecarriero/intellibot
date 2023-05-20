@@ -1,11 +1,15 @@
 import { Telegraf } from 'telegraf';
-import { requestBooking as buildRequestBooking } from '../../application/requestBooking';
-import { getPendingBookingRequests as buildGetPendingBookingRequests } from '../../application/getPendingBookingRequests';
-import { addBookingRequest, getBookingRequests } from '../aws/dynamo/BookingRequest';
+import { curriedRequestBooking } from '../../application/requestBooking';
+import { curriedGetPendingBookingRequests } from '../../application/getPendingBookingRequests';
+import { curriedAddBookingRequest, curriedGetBookingRequests } from '../aws/dynamo/BookingRequest';
 
 const tableName = process.env.DYNAMODB_TABLE_NAME!;
-const requestBooking = buildRequestBooking(addBookingRequest(tableName));
-const getPendingBookingRequests = buildGetPendingBookingRequests(getBookingRequests(tableName));
+const ports = {
+  addBookingRequest: curriedAddBookingRequest(tableName),
+  getBookingRequests: curriedGetBookingRequests(tableName),
+};
+const requestBooking = curriedRequestBooking(ports);
+const getPendingBookingRequests = curriedGetPendingBookingRequests(ports);
 
 const bot = new Telegraf(process.env.BOT_TOKEN!, { telegram: { webhookReply: true } });
 

@@ -1,3 +1,3 @@
-import { GetBookingRequests } from '../domain/BookingRequest';
+import { Ports } from '../domain/Ports';
 
-export const getPendingBookingRequests = (getBookingRequest: GetBookingRequests) => getBookingRequest;
+export const curriedGetPendingBookingRequests = (ports: Pick<Ports, 'getBookingRequests'>) => ports.getBookingRequests;

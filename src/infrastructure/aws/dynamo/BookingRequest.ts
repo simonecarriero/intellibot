@@ -1,7 +1,7 @@
 import DynamoDB from 'aws-sdk/clients/dynamodb';
 import { BookingRequest } from '../../../domain/BookingRequest';
 
-export const addBookingRequest =
+export const curriedAddBookingRequest =
   (tableName: string) =>
   async (request: BookingRequest): Promise<void> => {
     const client = dynamoClient();
@@ -15,7 +15,7 @@ export const addBookingRequest =
     await client.put(params).promise();
   };
 
-export const getBookingRequests = (tableName: string) => async (): Promise<BookingRequest[]> => {
+export const curriedGetBookingRequests = (tableName: string) => async (): Promise<BookingRequest[]> => {
   const client = dynamoClient();
   const response = await client.get({ TableName: tableName, Key: { PK: 'requests' } }).promise();
   return response.$response.data?.Item ? JSON.parse(response.$response.data?.Item?.json) : [];
