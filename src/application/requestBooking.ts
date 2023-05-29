@@ -1,5 +1,7 @@
+import { BookingRequest } from '../domain/BookingRequest';
 import { Ports } from '../domain/Ports';
-import { UseCases } from './UseCases';
 
-export const curriedRequestBooking = (ports: Pick<Ports, 'addBookingRequest'>): UseCases['requestBooking'] =>
+export type RequestBooking = (request: BookingRequest) => Promise<void>;
+
+export const curriedRequestBooking = (ports: Pick<Ports, 'addBookingRequest'>): RequestBooking =>
   ports.addBookingRequest;
