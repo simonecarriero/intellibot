@@ -8,7 +8,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: '19'
+          node-version: '18'
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
