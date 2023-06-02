@@ -1,7 +1,10 @@
+import { JustTime } from './JustTime';
+import { JustDate } from './JustDate';
+
 export type BookingRequest = {
-  date: string;
-  from: string;
-  to: string;
+  date: JustDate;
+  from: JustTime;
+  to: JustTime;
 };
 
 export type AddBookingRequest = (request: BookingRequest) => Promise<void>;

@@ -5,6 +5,8 @@ import { curriedAddBookingRequest, curriedGetBookingRequests } from '../infrastr
 import { curriedGetFreeSpots } from '../infrastructure/in-memory/FreeSpot';
 import { BookingRequest } from '../domain/BookingRequest';
 import { FreeSpot } from '../domain/FreeSpot';
+import { justTime } from '../domain/JustTime';
+import { justDate } from '../domain/JustDate';
 
 describe(`Application`, () => {
   it(`should book request and get pending requests`, async () => {
@@ -13,9 +15,9 @@ describe(`Application`, () => {
     const getPendingBookingRequests = curriedGetPendingBookingRequests(ports);
 
     const bookingRequest = {
-      date: `2023-03-24`,
-      from: `18:00`,
-      to: `20:00`,
+      date: justDate(2023, 3, 24),
+      from: justTime(18),
+      to: justTime(20),
     };
     await requestBooking(bookingRequest);
 
@@ -23,24 +25,24 @@ describe(`Application`, () => {
 
     expect(requests).toEqual([
       {
-        date: `2023-03-24`,
-        from: `18:00`,
-        to: `20:00`,
+        date: justDate(2023, 3, 24),
+        from: justTime(18),
+        to: justTime(20),
       },
     ]);
   });
 
   it(`should return the free spots for the booking requests`, async () => {
     let freeSpots = [
-      { date: `2019-12-31`, time: `18:00` },
-      { date: `2020-01-01`, time: `17:30` },
-      { date: `2020-01-01`, time: `18:30` },
-      { date: `2020-01-01`, time: `19:30` },
-      { date: `2020-01-01`, time: `20:30` },
+      { date: justDate(2019, 12, 31), time: justTime(18) },
+      { date: justDate(2020, 1, 1), time: justTime(17, 30) },
+      { date: justDate(2020, 1, 1), time: justTime(18, 30) },
+      { date: justDate(2020, 1, 1), time: justTime(19, 30) },
+      { date: justDate(2020, 1, 1), time: justTime(20, 30) },
     ];
     let bookingRequests = [
-      { date: `2020-01-01`, from: `18:00`, to: `19:00` },
-      { date: `2020-01-01`, from: `20:00`, to: `21:00` },
+      { date: justDate(2020, 1, 1), from: justTime(18), to: justTime(19) },
+      { date: justDate(2020, 1, 1), from: justTime(20), to: justTime(21) },
     ];
 
     const ports = testPorts(bookingRequests, freeSpots);
@@ -49,8 +51,8 @@ describe(`Application`, () => {
     const response = await checkBookingRequests();
 
     expect(response).toEqual([
-      { date: `2020-01-01`, time: `18:30` },
-      { date: `2020-01-01`, time: `20:30` },
+      { date: justDate(2020, 1, 1), time: justTime(18, 30) },
+      { date: justDate(2020, 1, 1), time: justTime(20, 30) },
     ]);
   });
 });

@@ -1,6 +1,9 @@
+import { JustTime } from './JustTime';
+import { JustDate } from './JustDate';
+
 export type FreeSpot = {
-  date: string;
-  time: string;
+  date: JustDate;
+  time: JustTime;
 };
 
-export type GetFreeSpots = (date: string, from: string, to: string) => FreeSpot[];
+export type GetFreeSpots = (date: JustDate, from: JustTime, to: JustTime) => Promise<FreeSpot[]>;

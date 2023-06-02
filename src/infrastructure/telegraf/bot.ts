@@ -1,5 +1,7 @@
 import { Telegraf } from 'telegraf';
 import { UseCases } from '../../application/UseCases';
+import { formatTime, justTime } from '../../domain/JustTime';
+import { formatDate, justToday } from '../../domain/JustDate';
 
 export const curriedBot = (
   botToken: string,
@@ -8,14 +10,16 @@ export const curriedBot = (
   const bot = new Telegraf(botToken, { telegram: { webhookReply: true } });
 
   bot.command('monitor', async (ctx) => {
-    const request = { date: new Date().toISOString().split('T')[0], from: '18:00', to: '20:00' };
+    const request = { date: justToday(), from: justTime(18), to: justTime(20) };
     await useCases.requestBooking(request);
-    ctx.reply(`monitoring for ${request.date} ${request.from} - ${request.to}`);
+    ctx.reply(`monitoring for ${formatDate(request.date)} ${formatTime(request.from)} - ${formatTime(request.to)}`);
   });
 
   bot.command('status', async (ctx) => {
     const requests = await useCases.getPendingBookingRequests();
-    requests.forEach((request) => ctx.reply(`monitoring for ${request.date} ${request.from} - ${request.to}`));
+    requests.forEach((request) =>
+      ctx.reply(`monitoring for ${formatDate(request.date)} ${formatTime(request.from)} - ${formatTime(request.to)}`),
+    );
   });
 
   return bot;
