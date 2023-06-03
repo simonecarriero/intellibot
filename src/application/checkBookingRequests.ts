@@ -1,11 +1,15 @@
 import { FreeSpot } from '../domain/FreeSpot';
 import { Ports } from '../domain/Ports';
+import { pipe } from 'fp-ts/lib/function';
+import * as A from 'fp-ts/Array';
+import * as TE from 'fp-ts/TaskEither';
 
-export type CheckBookingRequests = () => Promise<FreeSpot[]>;
+export type CheckBookingRequests = () => TE.TaskEither<Error, FreeSpot[]>;
 
 export const curriedCheckBookingRequests =
   (ports: Pick<Ports, 'getBookingRequests' | 'getFreeSpots'>): CheckBookingRequests =>
-  async (): Promise<FreeSpot[]> => {
-    const requests = await ports.getBookingRequests();
-    return (await Promise.all(requests.map((r) => ports.getFreeSpots(r.date, r.from, r.to)))).flat();
-  };
+  () =>
+    pipe(
+      ports.getBookingRequests(),
+      TE.flatMap((requests) => pipe(requests, A.traverse(TE.ApplicativePar)(ports.getFreeSpots), TE.map(A.flatten))),
+    );

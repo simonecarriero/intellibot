@@ -1,25 +1,35 @@
 import DynamoDB from 'aws-sdk/clients/dynamodb';
 import { BookingRequest } from '../../../domain/BookingRequest';
+import { pipe } from 'fp-ts/lib/function';
+import * as E from 'fp-ts/lib/Either';
+import * as TE from 'fp-ts/lib/TaskEither';
 
 export const curriedAddBookingRequest =
   (tableName: string) =>
-  async (request: BookingRequest): Promise<void> => {
-    const client = dynamoClient();
-    const params = {
-      TableName: tableName,
-      Item: {
-        PK: 'requests',
-        json: JSON.stringify([request]),
-      },
-    };
-    await client.put(params).promise();
+  (request: BookingRequest): TE.TaskEither<Error, void> => {
+    return pipe(
+      TE.tryCatch(
+        () =>
+          dynamoClient()
+            .put({ TableName: tableName, Item: { PK: 'requests', json: JSON.stringify([request]) } })
+            .promise(),
+        E.toError,
+      ),
+      TE.map((response) => {}),
+    );
   };
 
-export const curriedGetBookingRequests = (tableName: string) => async (): Promise<BookingRequest[]> => {
-  const client = dynamoClient();
-  const response = await client.get({ TableName: tableName, Key: { PK: 'requests' } }).promise();
-  return response.$response.data?.Item ? JSON.parse(response.$response.data?.Item?.json) : [];
-};
+export const curriedGetBookingRequests = (tableName: string) => (): TE.TaskEither<Error, BookingRequest[]> =>
+  pipe(
+    TE.tryCatch(
+      () =>
+        dynamoClient()
+          .get({ TableName: tableName, Key: { PK: 'requests' } })
+          .promise(),
+      E.toError,
+    ),
+    TE.map((response) => (response.$response.data?.Item ? JSON.parse(response.$response.data?.Item?.json) : [])),
+  );
 
 const dynamoClient = () =>
   new DynamoDB.DocumentClient({

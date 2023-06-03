@@ -1,5 +1,6 @@
 import { JustTime } from './JustTime';
 import { JustDate } from './JustDate';
+import * as TE from 'fp-ts/lib/TaskEither';
 
 export type BookingRequest = {
   date: JustDate;
@@ -7,6 +8,6 @@ export type BookingRequest = {
   to: JustTime;
 };
 
-export type AddBookingRequest = (request: BookingRequest) => Promise<void>;
+export type AddBookingRequest = (request: BookingRequest) => TE.TaskEither<Error, void>;
 
-export type GetBookingRequests = () => Promise<BookingRequest[]>;
+export type GetBookingRequests = () => TE.TaskEither<Error, BookingRequest[]>;

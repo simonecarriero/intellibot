@@ -1,6 +1,7 @@
 import { justTime } from '../../domain/JustTime';
 import { justDate } from '../../domain/JustDate';
 import { curriedGetFreeSpots } from './FreeSpot';
+import * as E from 'fp-ts/Either';
 
 describe('FreeSpot vertlife', () => {
   it('should call the API and parse a successful response', async () => {
@@ -21,12 +22,16 @@ describe('FreeSpot vertlife', () => {
 
     const getFreeSpots = curriedGetFreeSpots('https://example.org');
 
-    const freeSpots = await getFreeSpots(justDate(2023, 5, 30), justTime(16, 30), justTime(17, 30));
+    const freeSpots = await getFreeSpots({
+      date: justDate(2023, 5, 30),
+      from: justTime(16, 30),
+      to: justTime(17, 30),
+    })();
 
     expect(fetchSpy).toHaveBeenCalledWith('https://example.org/date/2023/05/30', {
       method: 'GET',
     });
 
-    expect(freeSpots).toEqual([{ date: justDate(2023, 5, 30), time: justTime(16, 30) }]);
+    expect(freeSpots).toEqual(E.right([{ date: justDate(2023, 5, 30), time: justTime(16, 30) }]));
   });
 });

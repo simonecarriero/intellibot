@@ -7,6 +7,7 @@ import { BookingRequest } from '../domain/BookingRequest';
 import { FreeSpot } from '../domain/FreeSpot';
 import { justTime } from '../domain/JustTime';
 import { justDate } from '../domain/JustDate';
+import * as E from 'fp-ts/Either';
 
 describe(`Application`, () => {
   it(`should book request and get pending requests`, async () => {
@@ -21,15 +22,17 @@ describe(`Application`, () => {
     };
     await requestBooking(bookingRequest);
 
-    const requests = await getPendingBookingRequests();
+    const requests = getPendingBookingRequests();
 
-    expect(requests).toEqual([
-      {
-        date: justDate(2023, 3, 24),
-        from: justTime(18),
-        to: justTime(20),
-      },
-    ]);
+    expect(requests()).resolves.toEqual(
+      E.right([
+        {
+          date: justDate(2023, 3, 24),
+          from: justTime(18),
+          to: justTime(20),
+        },
+      ]),
+    );
   });
 
   it(`should return the free spots for the booking requests`, async () => {
@@ -48,12 +51,14 @@ describe(`Application`, () => {
     const ports = testPorts(bookingRequests, freeSpots);
     const checkBookingRequests = buildCheckBookingRequests(ports);
 
-    const response = await checkBookingRequests();
+    const response = checkBookingRequests();
 
-    expect(response).toEqual([
-      { date: justDate(2020, 1, 1), time: justTime(18, 30) },
-      { date: justDate(2020, 1, 1), time: justTime(20, 30) },
-    ]);
+    expect(response()).resolves.toEqual(
+      E.right([
+        { date: justDate(2020, 1, 1), time: justTime(18, 30) },
+        { date: justDate(2020, 1, 1), time: justTime(20, 30) },
+      ]),
+    );
   });
 });
 
