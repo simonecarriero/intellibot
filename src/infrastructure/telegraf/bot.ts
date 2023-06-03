@@ -1,10 +1,10 @@
-import { Telegraf } from 'telegraf';
 import { UseCases } from '../../application/UseCases';
-import { formatTime, justTime } from '../../domain/JustTime';
 import { formatDate, justToday } from '../../domain/JustDate';
-import { pipe } from 'fp-ts/lib/function';
+import { formatTime, justTime } from '../../domain/JustTime';
 import * as A from 'fp-ts/Array';
 import * as TE from 'fp-ts/TaskEither';
+import { pipe } from 'fp-ts/lib/function';
+import { Telegraf } from 'telegraf';
 
 export const curriedBot = (
   botToken: string,

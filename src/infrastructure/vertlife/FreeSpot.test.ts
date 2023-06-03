@@ -1,5 +1,5 @@
-import { justTime } from '../../domain/JustTime';
 import { justDate } from '../../domain/JustDate';
+import { justTime } from '../../domain/JustTime';
 import { curriedGetFreeSpots } from './FreeSpot';
 import * as E from 'fp-ts/Either';
 

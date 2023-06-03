@@ -1,10 +1,10 @@
-import { Ports } from '../../domain/Ports';
-import { goe, loe, justTimeFromDate } from '../../domain/JustTime';
+import { BookingRequest } from '../../domain/BookingRequest';
 import { formatDate } from '../../domain/JustDate';
-import { pipe } from 'fp-ts/lib/function';
+import { goe, loe, justTimeFromDate } from '../../domain/JustTime';
+import { Ports } from '../../domain/Ports';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
-import { BookingRequest } from '../../domain/BookingRequest';
+import { pipe } from 'fp-ts/lib/function';
 
 export const curriedGetFreeSpots: (basePath: string) => Ports['getFreeSpots'] = (basePath) => (request) =>
   pipe(

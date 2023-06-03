@@ -1,12 +1,12 @@
-import { curriedGetPendingBookingRequests } from './getPendingBookingRequests';
-import { curriedRequestBooking } from './requestBooking';
-import { curriedCheckBookingRequests as buildCheckBookingRequests } from './checkBookingRequests';
-import { curriedAddBookingRequest, curriedGetBookingRequests } from '../infrastructure/in-memory/BookingRequest';
-import { curriedGetFreeSpots } from '../infrastructure/in-memory/FreeSpot';
 import { BookingRequest } from '../domain/BookingRequest';
 import { FreeSpot } from '../domain/FreeSpot';
-import { justTime } from '../domain/JustTime';
 import { justDate } from '../domain/JustDate';
+import { justTime } from '../domain/JustTime';
+import { curriedAddBookingRequest, curriedGetBookingRequests } from '../infrastructure/in-memory/BookingRequest';
+import { curriedGetFreeSpots } from '../infrastructure/in-memory/FreeSpot';
+import { curriedCheckBookingRequests as buildCheckBookingRequests } from './checkBookingRequests';
+import { curriedGetPendingBookingRequests } from './getPendingBookingRequests';
+import { curriedRequestBooking } from './requestBooking';
 import * as E from 'fp-ts/Either';
 
 describe(`Application`, () => {

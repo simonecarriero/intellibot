@@ -1,8 +1,8 @@
-import DynamoDB from 'aws-sdk/clients/dynamodb';
 import { BookingRequest } from '../../../domain/BookingRequest';
-import { pipe } from 'fp-ts/lib/function';
+import DynamoDB from 'aws-sdk/clients/dynamodb';
 import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
+import { pipe } from 'fp-ts/lib/function';
 
 export const curriedAddBookingRequest =
   (tableName: string) =>

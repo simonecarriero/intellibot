@@ -1,5 +1,5 @@
-import { curriedRequestBooking } from '../application/requestBooking';
 import { curriedGetPendingBookingRequests } from '../application/getPendingBookingRequests';
+import { curriedRequestBooking } from '../application/requestBooking';
 import { curriedAddBookingRequest, curriedGetBookingRequests } from './aws/dynamo/BookingRequest';
 import { curriedBot } from './telegraf/bot';
 

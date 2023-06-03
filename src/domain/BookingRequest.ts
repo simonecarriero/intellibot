@@ -1,5 +1,5 @@
-import { JustTime } from './JustTime';
 import { JustDate } from './JustDate';
+import { JustTime } from './JustTime';
 import * as TE from 'fp-ts/lib/TaskEither';
 
 export type BookingRequest = {
