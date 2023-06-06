@@ -32,6 +32,7 @@
   "dependencies": {
     "aws-sdk": "^2.1373.0",
     "fp-ts": "^2.16.0",
+    "io-ts": "^2.2.20",
     "telegraf": "^4.12.2"
   }
 }
