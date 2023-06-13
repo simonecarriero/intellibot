@@ -1,4 +1,5 @@
 import { UseCases } from '../../application/UseCases';
+import { BookingRequest } from '../../domain/BookingRequest';
 import { formatDate, justToday } from '../../domain/JustDate';
 import { formatTime, justTime } from '../../domain/JustTime';
 import * as A from 'fp-ts/Array';
@@ -16,8 +17,9 @@ export const curriedBot = (
     const request = { date: justToday(), from: justTime(18), to: justTime(20) };
     pipe(
       useCases.requestBooking(request),
-      TE.map((_) =>
-        ctx.reply(`monitoring for ${formatDate(request.date)} ${formatTime(request.from)} - ${formatTime(request.to)}`),
+      TE.matchW(
+        (e) => console.error(e),
+        (_) => ctx.reply(monitoringMessage(request)),
       ),
     )();
   });
@@ -25,11 +27,15 @@ export const curriedBot = (
   bot.command('status', async (ctx) => {
     pipe(
       useCases.getPendingBookingRequests(),
-      TE.map(
-        A.map((r) => ctx.reply(`monitoring for ${formatDate(r.date)} ${formatTime(r.from)} - ${formatTime(r.to)}`)),
+      TE.matchW(
+        (e) => console.error(e),
+        A.map((request) => ctx.reply(monitoringMessage(request))),
       ),
     )();
   });
 
   return bot;
 };
+
+const monitoringMessage = (request: BookingRequest): string =>
+  `monitoring for ${formatDate(request.date)} ${formatTime(request.from)} - ${formatTime(request.to)}`;
