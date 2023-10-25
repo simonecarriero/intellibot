@@ -8,6 +8,7 @@ export type BookingRequest = {
   to: JustTime;
 };
 
-export type AddBookingRequest = (request: BookingRequest) => TE.TaskEither<Error, void>;
-
-export type GetBookingRequests = () => TE.TaskEither<Error, BookingRequest[]>;
+export interface BookingRequestRepository {
+  add(request: BookingRequest): TE.TaskEither<Error, void>;
+  get(): TE.TaskEither<Error, BookingRequest[]>;
+}

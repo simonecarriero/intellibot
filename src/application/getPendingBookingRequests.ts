@@ -1,8 +1,8 @@
-import { BookingRequest } from '../domain/BookingRequest';
-import { Ports } from '../domain/Ports';
+import { BookingRequestRepository, BookingRequest } from '../domain/BookingRequest';
 import * as TE from 'fp-ts/lib/TaskEither';
 
 export type GetPendingBookingRequests = () => TE.TaskEither<Error, BookingRequest[]>;
 
-export const curriedGetPendingBookingRequests = (ports: Pick<Ports, 'getBookingRequests'>): GetPendingBookingRequests =>
-  ports.getBookingRequests;
+export const getPendingBookingRequests = (
+  bookingRequestRepository: BookingRequestRepository,
+): GetPendingBookingRequests => bookingRequestRepository.get;

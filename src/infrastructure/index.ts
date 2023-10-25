@@ -1,21 +1,14 @@
-import { curriedGetPendingBookingRequests } from '../application/getPendingBookingRequests';
-import { curriedRequestBooking } from '../application/requestBooking';
-import { curriedAddBookingRequest, curriedGetBookingRequests } from './aws/dynamo/BookingRequest';
-import { curriedBot } from './telegraf/bot';
+import { getPendingBookingRequests } from '../application/getPendingBookingRequests';
+import { BookingRequestRepositoryDynamo } from './aws/dynamo/BookingRequestRepositoryDynamo';
+import { telegrafBot } from './telegraf/bot';
 
 const tableName = process.env.DYNAMODB_TABLE_NAME!;
 
-const ports = {
-  addBookingRequest: curriedAddBookingRequest(tableName),
-  getBookingRequests: curriedGetBookingRequests(tableName),
-};
+const bookingRequestRepository = new BookingRequestRepositoryDynamo(tableName);
 
-const useCases = {
-  requestBooking: curriedRequestBooking(ports),
-  getPendingBookingRequests: curriedGetPendingBookingRequests(ports),
-};
+const getPendingBookingRequestsUseCase = getPendingBookingRequests(bookingRequestRepository);
 
-const bot = curriedBot(process.env.BOT_TOKEN!, useCases);
+const bot = telegrafBot(process.env.BOT_TOKEN!, getPendingBookingRequestsUseCase);
 
 export const handler = async (event: any, context: any, callback: any) => {
   await bot.handleUpdate(JSON.parse(event.body));

@@ -1,6 +1,6 @@
 import { justDate } from '../../domain/JustDate';
 import { justTime } from '../../domain/JustTime';
-import { curriedGetFreeSpots } from './FreeSpot';
+import { FreeSpotRepositoryVertLife } from './FreeSpotRepositoryVertLife';
 import * as E from 'fp-ts/Either';
 
 describe('FreeSpot vertlife', () => {
@@ -20,9 +20,9 @@ describe('FreeSpot vertlife', () => {
       }),
     } as Response);
 
-    const getFreeSpots = curriedGetFreeSpots('https://example.org');
+    const freeSpotRepository = new FreeSpotRepositoryVertLife('https://example.org');
 
-    const freeSpots = await getFreeSpots({
+    const freeSpots = await freeSpotRepository.get({
       date: justDate(2023, 5, 30),
       from: justTime(16, 30),
       to: justTime(17, 30),
@@ -44,9 +44,9 @@ describe('FreeSpot vertlife', () => {
       json: async () => ({ slots: [{ free_spots: 1 }] }),
     } as Response);
 
-    const getFreeSpots = curriedGetFreeSpots('https://example.org');
+    const freeSpotRepository = new FreeSpotRepositoryVertLife('https://example.org');
 
-    const freeSpots = await getFreeSpots({
+    const freeSpots = await freeSpotRepository.get({
       date: justDate(2023, 5, 30),
       from: justTime(16, 30),
       to: justTime(17, 30),

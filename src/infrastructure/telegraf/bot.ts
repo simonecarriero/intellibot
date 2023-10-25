@@ -1,4 +1,4 @@
-import { UseCases } from '../../application/UseCases';
+import { GetPendingBookingRequests } from '../../application/getPendingBookingRequests';
 import { BookingRequest } from '../../domain/BookingRequest';
 import { formatDate, justToday } from '../../domain/JustDate';
 import { formatTime, justTime } from '../../domain/JustTime';
@@ -7,16 +7,13 @@ import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
 import { Telegraf } from 'telegraf';
 
-export const curriedBot = (
-  botToken: string,
-  useCases: Pick<UseCases, 'requestBooking' | 'getPendingBookingRequests'>,
-) => {
+export const telegrafBot = (botToken: string, getPendingBookingRequests: GetPendingBookingRequests) => {
   const bot = new Telegraf(botToken, { telegram: { webhookReply: true } });
 
   bot.command('monitor', async (ctx) => {
     const request = { date: justToday(), from: justTime(18), to: justTime(20) };
     pipe(
-      useCases.requestBooking(request),
+      getPendingBookingRequests(),
       TE.matchW(
         (e) => console.error(e),
         (_) => ctx.reply(monitoringMessage(request)),
@@ -26,7 +23,7 @@ export const curriedBot = (
 
   bot.command('status', async (ctx) => {
     pipe(
-      useCases.getPendingBookingRequests(),
+      getPendingBookingRequests(),
       TE.matchW(
         (e) => console.error(e),
         A.map((request) => ctx.reply(monitoringMessage(request))),

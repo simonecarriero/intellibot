@@ -8,4 +8,6 @@ export type FreeSpot = {
   time: JustTime;
 };
 
-export type GetFreeSpots = (request: BookingRequest) => TE.TaskEither<Error, FreeSpot[]>;
+export interface FreeSpotRepository {
+  get(request: BookingRequest): TE.TaskEither<Error, FreeSpot[]>;
+}
