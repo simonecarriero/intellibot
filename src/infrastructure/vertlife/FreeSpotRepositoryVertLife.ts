@@ -25,6 +25,10 @@ export class FreeSpotRepositoryVertLife implements FreeSpotRepository {
       ),
     );
   };
+
+  book = (freeSpot: FreeSpot): TE.TaskEither<Error, void> => {
+    throw new Error('todo');
+  };
 }
 
 const url = (basePath: string, request: BookingRequest): string => {

@@ -17,4 +17,12 @@ export class FreeSpotRepositoryInMemory implements FreeSpotRepository {
         .filter((s) => loe(s.time, request.to)),
     );
   };
+
+  book = (freeSpot: FreeSpot): TE.TaskEither<Error, void> => {
+    const index = this.state.findIndex((f) => f.date === freeSpot.date && f.time === freeSpot.time);
+    if (index !== -1) {
+      this.state.splice(index, 1);
+    }
+    return TE.of(undefined);
+  };
 }

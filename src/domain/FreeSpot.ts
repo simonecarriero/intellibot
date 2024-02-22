@@ -10,4 +10,5 @@ export type FreeSpot = {
 
 export interface FreeSpotRepository {
   get(request: BookingRequest): TE.TaskEither<Error, FreeSpot[]>;
+  book(spot: FreeSpot): TE.TaskEither<Error, void>;
 }

@@ -2,6 +2,7 @@ import { justDate } from '../domain/JustDate';
 import { justTime } from '../domain/JustTime';
 import { BookingRequestRepositoryInMemory } from '../infrastructure/in-memory/BookingRequestRepositoryInMemory';
 import { FreeSpotRepositoryInMemory } from '../infrastructure/in-memory/FreeSpotRepositoryInMemory';
+import { book } from './book';
 import { checkBookingRequests } from './checkBookingRequests';
 import { getPendingBookingRequests } from './getPendingBookingRequests';
 import { requestBooking } from './requestBooking';
@@ -56,5 +57,45 @@ describe(`Application`, () => {
         { date: justDate(2020, 1, 1), time: justTime(20, 30) },
       ]),
     );
+  });
+
+  it(`should book the first available spot for each booking request`, async () => {
+    let freeSpots = [
+      { date: justDate(2020, 1, 1), time: justTime(18, 30) },
+      { date: justDate(2020, 1, 1), time: justTime(19, 30) },
+      { date: justDate(2020, 1, 1), time: justTime(19, 30) },
+    ];
+    let bookingRequests = [
+      { date: justDate(2020, 1, 1), from: justTime(18), to: justTime(20) },
+      { date: justDate(2020, 1, 1), from: justTime(18), to: justTime(21) },
+    ];
+
+    const freeSpotRepository = new FreeSpotRepositoryInMemory(freeSpots);
+    const bookingRequestRepository = new BookingRequestRepositoryInMemory(bookingRequests);
+    const bookUseCase = book(bookingRequestRepository, freeSpotRepository);
+
+    await bookUseCase();
+
+    const spots = freeSpotRepository.get({ date: justDate(2020, 1, 1), from: justTime(1), to: justTime(23, 59) });
+
+    expect(spots()).resolves.toEqual(E.right([{ date: justDate(2020, 1, 1), time: justTime(19, 30) }]));
+  });
+
+  it(`should skip a request if there are not spots available for it`, async () => {
+    let freeSpots = [{ date: justDate(2020, 1, 1), time: justTime(20, 30) }];
+    let bookingRequests = [
+      { date: justDate(2020, 1, 1), from: justTime(18), to: justTime(20) },
+      { date: justDate(2020, 1, 1), from: justTime(19), to: justTime(21) },
+    ];
+
+    const freeSpotRepository = new FreeSpotRepositoryInMemory(freeSpots);
+    const bookingRequestRepository = new BookingRequestRepositoryInMemory(bookingRequests);
+    const bookUseCase = book(bookingRequestRepository, freeSpotRepository);
+
+    await bookUseCase();
+
+    const spots = freeSpotRepository.get({ date: justDate(2020, 1, 1), from: justTime(1), to: justTime(23, 59) });
+
+    expect(spots()).resolves.toEqual(E.right([]));
   });
 });
