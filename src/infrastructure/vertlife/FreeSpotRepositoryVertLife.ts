@@ -20,6 +20,7 @@ export class FreeSpotRepositoryVertLife implements FreeSpotRepository {
           .filter((s) => s.free_spots > 0)
           .filter((s) => goe(justTimeFromDate(new Date(s.slot.check_in_at)), request.from))
           .filter((s) => loe(justTimeFromDate(new Date(s.slot.check_in_at)), request.to))
+          .flatMap((s) => Array(s.free_spots).fill(s))
           .map((s) => ({
             id: s.def_id,
             date: request.date,

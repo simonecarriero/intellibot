@@ -36,6 +36,33 @@ describe('FreeSpot vertlife', () => {
     expect(freeSpots).toEqual(E.right([{ id: 35, date: justDate(2023, 5, 30), time: justTime(16, 30) }]));
   });
 
+  it('considers the number of free spots', async () => {
+    const fetchSpy = jest.spyOn(global, 'fetch');
+
+    fetchSpy.mockResolvedValue({
+      status: 200,
+      ok: true,
+      json: async () => ({
+        slots: [{ slot: { check_in_at: '2023-05-30T16:00:00.000Z' }, free_spots: 2, def_id: 35 }],
+      }),
+    } as Response);
+
+    const freeSpotRepository = new FreeSpotRepositoryVertLife('https://example.org');
+
+    const freeSpots = await freeSpotRepository.get({
+      date: justDate(2023, 5, 30),
+      from: justTime(16),
+      to: justTime(17),
+      chat: 123,
+    })();
+    expect(freeSpots).toEqual(
+      E.right([
+        { id: 35, date: justDate(2023, 5, 30), time: justTime(16) },
+        { id: 35, date: justDate(2023, 5, 30), time: justTime(16) },
+      ]),
+    );
+  });
+
   it('calls the API and parse a bad response', async () => {
     const fetchSpy = jest.spyOn(global, 'fetch');
 
