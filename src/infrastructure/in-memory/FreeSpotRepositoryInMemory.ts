@@ -1,5 +1,5 @@
 import { BookingRequest } from '../../domain/BookingRequest';
-import { FreeSpot, FreeSpotRepository } from '../../domain/FreeSpot';
+import { FreeSpot, FreeSpotRepository, User } from '../../domain/FreeSpot';
 import { goe, loe } from '../../domain/JustTime';
 import * as TE from 'fp-ts/TaskEither';
 
@@ -18,7 +18,7 @@ export class FreeSpotRepositoryInMemory implements FreeSpotRepository {
     );
   };
 
-  book = (freeSpot: FreeSpot): TE.TaskEither<Error, void> => {
+  book = (freeSpot: FreeSpot, user: User): TE.TaskEither<Error, void> => {
     const index = this.state.findIndex((f) => f.date === freeSpot.date && f.time === freeSpot.time);
     if (index !== -1) {
       this.state.splice(index, 1);

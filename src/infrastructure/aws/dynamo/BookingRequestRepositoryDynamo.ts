@@ -6,7 +6,6 @@ import { pipe } from 'fp-ts/lib/function';
 
 export class BookingRequestRepositoryDynamo implements BookingRequestRepository {
   constructor(private tableName: string) {}
-
   add = (request: BookingRequest): TE.TaskEither<Error, void> => {
     return pipe(
       TE.tryCatch(
@@ -19,6 +18,9 @@ export class BookingRequestRepositoryDynamo implements BookingRequestRepository 
       TE.map((response) => {}),
     );
   };
+  delete(request: BookingRequest): TE.TaskEither<Error, void> {
+    throw new Error('Method not implemented.');
+  }
   get = (): TE.TaskEither<Error, BookingRequest[]> => {
     return pipe(
       TE.tryCatch(

@@ -4,11 +4,19 @@ import { JustTime } from './JustTime';
 import * as TE from 'fp-ts/lib/TaskEither';
 
 export type FreeSpot = {
+  id: number;
   date: JustDate;
   time: JustTime;
 };
 
+export type User = {
+  firstname: string;
+  lastname: string;
+  email: string;
+  phone: string;
+};
+
 export interface FreeSpotRepository {
   get(request: BookingRequest): TE.TaskEither<Error, FreeSpot[]>;
-  book(spot: FreeSpot): TE.TaskEither<Error, void>;
+  book(spot: FreeSpot, user: User): TE.TaskEither<Error, void>;
 }

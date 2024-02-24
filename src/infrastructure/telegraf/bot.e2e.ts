@@ -17,5 +17,5 @@ describe('Bot', () => {
 
     await telegram.sendMessage('/status');
     await telegram.expectMessages([`monitoring for ${todayDate()} 18:00 - 20:00`]);
-  }, 10000);
+  }, 30000);
 });

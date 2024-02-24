@@ -1,19 +1,27 @@
-import { GetPendingBookingRequests } from '../../application/getPendingBookingRequests';
-import { BookingRequest } from '../../domain/BookingRequest';
+import { book } from '../../application/book';
+import { BookingRequest, BookingRequestRepository } from '../../domain/BookingRequest';
+import { FreeSpotRepository } from '../../domain/FreeSpot';
 import { formatDate, justToday } from '../../domain/JustDate';
 import { formatTime, justTime } from '../../domain/JustTime';
-import * as A from 'fp-ts/Array';
+import Cron from 'croner';
+import * as A from 'fp-ts/ReadonlyArray';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
 import { Telegraf } from 'telegraf';
 
-export const telegrafBot = (botToken: string, getPendingBookingRequests: GetPendingBookingRequests) => {
+export const telegrafBot = (
+  botToken: string,
+  bookingRequestRepository: BookingRequestRepository,
+  freeSpotRepository: FreeSpotRepository,
+) => {
   const bot = new Telegraf(botToken, { telegram: { webhookReply: true } });
 
   bot.command('monitor', async (ctx) => {
-    const request = { date: justToday(), from: justTime(18), to: justTime(20) };
+    const chat = await ctx.getChat();
+    const request = { date: justToday(), from: justTime(18), to: justTime(20), chat: chat.id };
     pipe(
-      getPendingBookingRequests(),
+      bookingRequestRepository.add(request),
+      TE.flatMap((_) => bookingRequestRepository.get()),
       TE.matchW(
         (e) => console.error(e),
         (_) => ctx.reply(monitoringMessage(request)),
@@ -23,13 +31,28 @@ export const telegrafBot = (botToken: string, getPendingBookingRequests: GetPend
 
   bot.command('status', async (ctx) => {
     pipe(
-      getPendingBookingRequests(),
+      bookingRequestRepository.get(),
       TE.matchW(
         (e) => console.error(e),
         A.map((request) => ctx.reply(monitoringMessage(request))),
       ),
     )();
   });
+
+  Cron('* * * * *', () =>
+    pipe(
+      book(bookingRequestRepository, freeSpotRepository),
+      TE.matchW(
+        (e) => console.error(e),
+        A.map(([bookedRequest, bookedSpot]) => {
+          return bot.telegram.sendMessage(
+            bookedRequest.chat,
+            `booked for ${formatDate(bookedSpot.date)} at ${formatTime(bookedSpot.time)}`,
+          );
+        }),
+      ),
+    )(),
+  );
 
   return bot;
 };

@@ -6,9 +6,11 @@ export type BookingRequest = {
   date: JustDate;
   from: JustTime;
   to: JustTime;
+  chat: number;
 };
 
 export interface BookingRequestRepository {
   add(request: BookingRequest): TE.TaskEither<Error, void>;
+  delete(request: BookingRequest): TE.TaskEither<Error, void>;
   get(): TE.TaskEither<Error, BookingRequest[]>;
 }

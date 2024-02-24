@@ -5,6 +5,7 @@ const Slot = D.struct({
 });
 
 const SlotFreeSpots = D.struct({
+  def_id: D.number,
   slot: Slot,
   free_spots: D.number,
 });
