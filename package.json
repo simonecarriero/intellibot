@@ -26,6 +26,7 @@
     "localstack:stop": "docker ps --filter name=intellibot-localstack -aq | xargs docker rm -f",
     "start": "./start.sh attach",
     "test": "prettier --check src && jest --testMatch '**/?(*.)+(test).ts' --silent",
+    "tcr": "yarn test && git add . && git commit -m WIP || git reset --hard",
     "e2e": "npx jest --testMatch '**/?(*.)+(e2e).ts' --silent --forceExit # --forceExit because of https://github.com/gram-js/gramjs/issues/242",
     "e2e:local": "./start.sh e2e"
   },
