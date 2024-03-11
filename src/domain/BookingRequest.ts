@@ -7,6 +7,7 @@ export type BookingRequest = {
   from: JustTime;
   to: JustTime;
   chat: number;
+  user?: string;
 };
 
 export interface BookingRequestRepository {

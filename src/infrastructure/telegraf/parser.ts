@@ -4,10 +4,12 @@ import { justTime } from '../../domain/JustTime';
 import * as chrono from 'chrono-node';
 
 export const parse = (input: string, now: () => JustDate): BookingRequest[] => {
+  const users = (input.split('for')[1] || '').trim();
+
   const results = chrono.parse(input, new Date(formatDate(now())), { forwardDate: true });
 
   if (results.length < 1) {
-    return [{ date: now(), from: justTime(18), to: justTime(20), chat: 123 }];
+    return [{ date: now(), from: justTime(18), to: justTime(20), chat: 123, user: users }];
   }
 
   return results.map((result) => {
@@ -26,6 +28,7 @@ export const parse = (input: string, now: () => JustDate): BookingRequest[] => {
       from: justTime(fromHour, fromMinute),
       to: justTime(toHour, toMinute),
       chat: 123,
+      user: users,
     };
   });
 };

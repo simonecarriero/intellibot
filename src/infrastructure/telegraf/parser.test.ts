@@ -57,4 +57,18 @@ describe(`parser`, () => {
       expect.objectContaining({ date: justDate(2024, 3, 2), from: justTime(19), to: justTime(20) }),
     ]);
   });
+
+  it(`parses just the user`, async () => {
+    const now = () => justDate(2024, 3, 1);
+    const requests = parse('/book for Jane', now);
+
+    expect(requests).toEqual([expect.objectContaining({ user: 'Jane' })]);
+  });
+
+  it(`parses a time range and the user`, async () => {
+    const now = () => justDate(2024, 3, 1);
+    const requests = parse('/book today for Jane', now);
+
+    expect(requests).toEqual([expect.objectContaining({ user: 'Jane' })]);
+  });
 });
