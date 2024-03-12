@@ -4,6 +4,7 @@ import { FreeSpotRepository } from '../../domain/FreeSpot';
 import { formatDate, justToday } from '../../domain/JustDate';
 import { formatTime, justTime } from '../../domain/JustTime';
 import { UserRepository } from '../../domain/User';
+import { parse } from './parser';
 import Cron from 'croner';
 import * as A from 'fp-ts/ReadonlyArray';
 import * as TE from 'fp-ts/TaskEither';
@@ -20,13 +21,13 @@ export const telegrafBot = (
 
   bot.command('monitor', async (ctx) => {
     const chat = await ctx.getChat();
-    const request = { date: justToday(), from: justTime(18), to: justTime(20), chat: chat.id };
+    const requests = parse(ctx.update.message.text, justToday);
     pipe(
-      bookingRequestRepository.add(request),
-      TE.flatMap((_) => bookingRequestRepository.get()),
+      TE.right(parse(ctx.update.message.text, justToday)),
+      TE.flatMap((r) => pipe(r, TE.traverseSeqArray(bookingRequestRepository.add))),
       TE.matchW(
         (e) => console.error(e),
-        (_) => ctx.reply(monitoringMessage(request)),
+        (_) => requests.forEach((r) => ctx.reply(monitoringMessage(r))),
       ),
     )();
   });
@@ -60,4 +61,4 @@ export const telegrafBot = (
 };
 
 const monitoringMessage = (request: BookingRequest): string =>
-  `monitoring for ${formatDate(request.date)} ${formatTime(request.from)} - ${formatTime(request.to)}`;
+  `monitoring ${formatDate(request.date)} ${formatTime(request.from)} - ${formatTime(request.to)} for ${request.user}`;
