@@ -7,6 +7,7 @@ export type FreeSpot = {
   id: number;
   date: JustDate;
   time: JustTime;
+  user?: User;
 };
 
 export type User = {

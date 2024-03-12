@@ -3,6 +3,7 @@ import { BookingRequest, BookingRequestRepository } from '../../domain/BookingRe
 import { FreeSpotRepository } from '../../domain/FreeSpot';
 import { formatDate, justToday } from '../../domain/JustDate';
 import { formatTime, justTime } from '../../domain/JustTime';
+import { UserRepository } from '../../domain/User';
 import Cron from 'croner';
 import * as A from 'fp-ts/ReadonlyArray';
 import * as TE from 'fp-ts/TaskEither';
@@ -13,6 +14,7 @@ export const telegrafBot = (
   botToken: string,
   bookingRequestRepository: BookingRequestRepository,
   freeSpotRepository: FreeSpotRepository,
+  userRepository: UserRepository,
 ) => {
   const bot = new Telegraf(botToken, { telegram: { webhookReply: true } });
 
@@ -41,7 +43,7 @@ export const telegrafBot = (
 
   Cron('* * * * *', () =>
     pipe(
-      book(bookingRequestRepository, freeSpotRepository),
+      book(bookingRequestRepository, freeSpotRepository, userRepository),
       TE.matchW(
         (e) => console.error(e),
         A.map(([bookedRequest, bookedSpot]) => {

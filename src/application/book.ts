@@ -1,32 +1,28 @@
 import { BookingRequest, BookingRequestRepository } from '../domain/BookingRequest';
 import { FreeSpot, FreeSpotRepository } from '../domain/FreeSpot';
+import { UserRepository } from '../domain/User';
 import * as O from 'fp-ts/Option';
 import * as A from 'fp-ts/ReadonlyArray';
 import * as TE from 'fp-ts/TaskEither';
+import { sequenceT } from 'fp-ts/lib/Apply';
 import { pipe } from 'fp-ts/lib/function';
 
 export const book = (
   bookingRequestRepository: BookingRequestRepository,
   freeSpotRepository: FreeSpotRepository,
+  userRepository: UserRepository,
 ): TE.TaskEither<Error, readonly [BookingRequest, FreeSpot][]> => {
   const tryBooking = (request: BookingRequest): TE.TaskEither<Error, O.Option<[BookingRequest, FreeSpot]>> => {
-    const user = {
-      firstname: 'Jane',
-      lastname: 'Doe',
-      email: 'jane.doe@example.com',
-      phone: '0123456789',
-    };
-
     return pipe(
-      freeSpotRepository.get(request),
-      TE.flatMap((spots) => {
+      sequenceT(TE.ApplyPar)(userRepository.get(request.user || 'Jane'), freeSpotRepository.get(request)),
+      TE.flatMap(([user, spots]) => {
         if (spots.length === 0) {
           return TE.right(O.none);
         }
         return pipe(
           freeSpotRepository.book(spots[0], user),
           TE.flatMap((_) => bookingRequestRepository.delete(request)),
-          TE.map((_) => O.some([request, spots[0]])),
+          TE.map((_) => O.some([request, { ...spots[0], user }])),
         );
       }),
     );

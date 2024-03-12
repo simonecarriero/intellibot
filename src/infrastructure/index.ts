@@ -1,11 +1,13 @@
 import { BookingRequestRepositoryInMemory } from './in-memory/BookingRequestRepositoryInMemory';
+import { UserRepositoryInMemory } from './in-memory/UserRepositoryInMemory';
 import { telegrafBot } from './telegraf/bot';
 import { FreeSpotRepositoryVertLife } from './vertlife/FreeSpotRepositoryVertLife';
 import * as http from 'http';
 
 const bookingRequestRepository = new BookingRequestRepositoryInMemory();
 const freeSpotRepository = new FreeSpotRepositoryVertLife(process.env.API_BASE_PATH!);
-const bot = telegrafBot(process.env.BOT_TOKEN!, bookingRequestRepository, freeSpotRepository);
+const userRepository = new UserRepositoryInMemory();
+const bot = telegrafBot(process.env.BOT_TOKEN!, bookingRequestRepository, freeSpotRepository, userRepository);
 
 (async () => {
   http
