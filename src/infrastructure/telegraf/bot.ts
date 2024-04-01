@@ -21,9 +21,9 @@ export const telegrafBot = (
 
   bot.command('monitor', async (ctx) => {
     const chat = await ctx.getChat();
-    const requests = parse(ctx.update.message.text, justToday);
+    const requests = parse(ctx.update.message.text, justToday, chat.id);
     pipe(
-      TE.right(parse(ctx.update.message.text, justToday)),
+      TE.right(requests),
       TE.flatMap((r) => pipe(r, TE.traverseSeqArray(bookingRequestRepository.add))),
       TE.matchW(
         (e) => console.error(e),

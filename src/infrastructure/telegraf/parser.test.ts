@@ -58,11 +58,25 @@ describe(`parser`, () => {
     ]);
   });
 
+  it(`returns the given chat id`, async () => {
+    const chatId = 42;
+    const requests = parse('/book', () => justDate(2024, 1, 1), chatId);
+
+    expect(requests).toEqual([expect.objectContaining({ chat: chatId })]);
+  });
+
   it(`parses just the user`, async () => {
     const now = () => justDate(2024, 3, 1);
     const requests = parse('/book for Jane', now);
 
     expect(requests).toEqual([expect.objectContaining({ user: 'Jane' })]);
+  });
+
+  it(`parses for all users if no user is present`, async () => {
+    const now = () => justDate(2024, 3, 1);
+    const requests = parse('/book', now, 123, ['Jane', 'Joe']);
+
+    expect(requests).toEqual([expect.objectContaining({ user: 'Jane' }), expect.objectContaining({ user: 'Joe' })]);
   });
 
   it(`parses a time range and the user`, async () => {
@@ -71,4 +85,14 @@ describe(`parser`, () => {
 
     expect(requests).toEqual([expect.objectContaining({ user: 'Jane' })]);
   });
+
+  it.each([{ separator: ' ' }, { separator: ',' }, { separator: '  ,,  ' }])(
+    `parses multiple users splitting by '$separator'`,
+    async ({ separator: s }) => {
+      const now = () => justDate(2024, 3, 1);
+      const requests = parse(`/book today for Jane${s}Joe`, now);
+
+      expect(requests).toEqual([expect.objectContaining({ user: 'Jane' }), expect.objectContaining({ user: 'Joe' })]);
+    },
+  );
 });

@@ -3,16 +3,22 @@ import { JustDate, formatDate, justDate } from '../../domain/JustDate';
 import { justTime } from '../../domain/JustTime';
 import * as chrono from 'chrono-node';
 
-export const parse = (input: string, now: () => JustDate): BookingRequest[] => {
-  const users = (input.split('for')[1] || '').trim();
+export const parse = (
+  input: string,
+  now: () => JustDate,
+  chat: number = 123,
+  allUsers: string[] = ['Jane'],
+): BookingRequest[] => {
+  const usersString = input.split('for')[1] || '';
+  const usersTokens = Array.from(usersString.matchAll(/[a-zA-Z]+/g)).map((x) => x[0]);
+  const users = usersTokens.length > 0 ? usersTokens : allUsers;
 
   const results = chrono.parse(input, new Date(formatDate(now())), { forwardDate: true });
 
   if (results.length < 1) {
-    return [{ date: now(), from: justTime(18), to: justTime(20), chat: 123, user: users }];
+    return users.map((user) => ({ date: now(), from: justTime(18), to: justTime(20), chat, user }));
   }
-
-  return results.map((result) => {
+  return results.flatMap((result) => {
     const year = result.start.get('year') || now().year;
     const month = result.start.get('month') || now().month;
     const day = result.start.get('day') || now().day;
@@ -23,12 +29,12 @@ export const parse = (input: string, now: () => JustDate): BookingRequest[] => {
     const toHour = result.end?.get('hour') || fromHour + 2;
     const toMinute = result.end?.get('minute') || 0;
 
-    return {
+    return users.map((user) => ({
       date: justDate(year, month, day),
       from: justTime(fromHour, fromMinute),
       to: justTime(toHour, toMinute),
       chat: 123,
-      user: users,
-    };
+      user,
+    }));
   });
 };
