@@ -5,6 +5,7 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.4",
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
     "@types/aws-lambda": "^8.10.114",
     "@types/jest": "^29.5.0",
@@ -24,8 +25,10 @@
     "build": "tsc",
     "localstack:start": "docker restart intellibot-localstack || docker run --rm -d -p 4566:4566 -v /var/run/docker.sock:/var/run/docker.sock --env DOCKER_HOST=unix:///var/run/docker.sock --name intellibot-localstack localstack/localstack",
     "localstack:stop": "docker ps --filter name=intellibot-localstack -aq | xargs docker rm -f",
-    "start": "./start.sh attach",
-    "test": "prettier --check src && jest --testMatch '**/?(*.)+(test).ts' --silent",
+    "start": "node dist/infrastructure/index.js",
+    "start:local": "./start.sh attach",
+    "check": "prettier --check src && tsc --noEmit && jest --testMatch '**/?(*.)+(test).ts'",
+    "test": "jest --testMatch '**/?(*.)+(test).ts'",
     "tcr": "yarn test && git add . && git commit -m WIP || git reset --hard",
     "e2e": "npx jest --testMatch '**/?(*.)+(e2e).ts' --silent --forceExit # --forceExit because of https://github.com/gram-js/gramjs/issues/242",
     "e2e:local": "./start.sh e2e"

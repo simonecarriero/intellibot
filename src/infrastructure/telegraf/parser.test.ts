@@ -65,6 +65,13 @@ describe(`parser`, () => {
     expect(requests).toEqual([expect.objectContaining({ chat: chatId })]);
   });
 
+  it(`returns the given chat id booking`, async () => {
+    const chatId = 42;
+    const requests = parse('/book today 18', () => justDate(2024, 1, 1), chatId);
+
+    expect(requests).toEqual([expect.objectContaining({ chat: chatId })]);
+  });
+
   it(`parses just the user`, async () => {
     const now = () => justDate(2024, 3, 1);
     const requests = parse('/book for Jane', now);

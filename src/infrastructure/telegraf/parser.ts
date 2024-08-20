@@ -33,7 +33,7 @@ export const parse = (
       date: justDate(year, month, day),
       from: justTime(fromHour, fromMinute),
       to: justTime(toHour, toMinute),
-      chat: 123,
+      chat,
       user,
     }));
   });
